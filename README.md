@@ -10,7 +10,7 @@
 
 ## Getting started
 
-1. PHP 5.3.x is required
+1. PHP 5.4.x is required
 2. Install Klein using [Composer](#composer-installation) (recommended) or manually
 3. Setup [URL rewriting](https://gist.github.com/874000) so that all requests are handled by **index.php**
 4. (Optional) Throw in some [APC](http://pecl.php.net/package/APC) for good measure
@@ -354,49 +354,8 @@ $response->
     file($path, $filename = null)                   // Send a file
     json($object, $jsonp_prefix = null)             // Send an object as JSON or JSONP by providing padding prefix
 
-$service->
-    sharedData()                                    // Return the shared data collection
-    startSession()                                  // Start a session and return its ID
-    flash($msg, $type = 'info', $params = array()   // Set a flash message
-    flashes($type = null)                           // Retrieve and clears all flashes of $type
-    markdown($str, $args, ...)                      // Return a string formatted with markdown
-    escape($str)                                    // Escape a string
-    refresh()                                       // Redirect to the current URL
-    back()                                          // Redirect to the referer
-    query($key, $value = null)                      // Modify the current query string
-    query($arr)
-    layout($layout)                                 // Set the view layout
-    yieldView()                                     // Call inside the layout to render the view content
-    render($view, $data = array())                  // Render a view or partial (in the scope of $response)
-    partial($view, $data = array())                 // Render a partial without a layout (in the scope of $response)
-    addValidator($method, $callback)                // Add a custom validator method
-    validate($string, $err = null)                  // Validate a string (with a custom error message)
-    validateParam($param, $err = null)                  // Validate a param
-    <callback>($arg1, ...)                          // Call a user-defined helper
-    <property>                                      // Get a user-defined property
-
 $app->
     <callback>($arg1, ...)                          //Call a user-defined helper
-
-$validator->
-    notNull()                           // The string must not be null
-    isLen($length)                      // The string must be the exact length
-    isLen($min, $max)                   // The string must be between $min and $max length (inclusive)
-    isInt()                             // Check for a valid integer
-    isFloat()                           // Check for a valid float/decimal
-    isEmail()                           // Check for a valid email
-    isUrl()                             // Check for a valid URL
-    isIp()                              // Check for a valid IP
-    isAlpha()                           // Check for a-z (case insensitive)
-    isAlnum()                           // Check for alphanumeric characters
-    contains($needle)                   // Check if the string contains $needle
-    isChars($chars)                     // Validate against a character list
-    isRegex($pattern, $modifiers = '')  // Validate against a regular expression
-    notRegex($pattern, $modifiers ='')
-    is<Validator>()                     // Validate against a custom validator
-    not<Validator>()                    // The validator can't match
-    <Validator>()                       // Alias for is<Validator>()
-```
 
 ## Unit Testing
 
