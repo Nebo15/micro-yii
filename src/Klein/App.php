@@ -40,6 +40,7 @@ class App
 	 * The array of return values
 	 *
 	 * @var array
+	 * @access protected
 	 */
 	protected $values = array();
 
