@@ -43,6 +43,22 @@ class App
 	 */
 	protected $values = array();
 
+	public function service($name, $closure)
+	{
+		$this->services[$name] = $closure;
+	}
+
+	public function instantiate($name)
+	{
+		if (!isset($this->services[$name])) {
+			throw new UnknownServiceException('Unknown service ' . $name);
+		}
+		$service = $this->services[$name];
+
+		$args = array_slice(func_get_args(), 1);
+		return call_user_func_array($service, $args);
+	}
+
 	/**
 	 * Magic "__call" method
 	 *
@@ -68,22 +84,6 @@ class App
 				return $this->values[$method];
 			}
 		}
-	}
-
-	public function service($name, $closure)
-	{
-		$this->services[$name] = $closure;
-	}
-
-	public function instantiate($name)
-	{
-		if (!isset($this->services[$name])) {
-			throw new UnknownServiceException('Unknown service ' . $name);
-		}
-		$service = $this->services[$name];
-
-		$args = array_slice(func_get_args(), 1);
-		return call_user_func_array($service, $args);
 	}
 
 	/**
