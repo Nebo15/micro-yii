@@ -54,6 +54,8 @@ class App
 			throw new UnknownServiceException('Unknown service ' . $name);
 		}
 		$service = $this->services[$name];
+		if(!is_callable($service))
+			return $service;
 
 		$args = array_slice(func_get_args(), 1);
 		return call_user_func_array($service, $args);

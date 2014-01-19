@@ -40,6 +40,13 @@ class AppTest extends AbstractKleinTest
 		};
 	}
 
+	public function testService_StoreObjects()
+	{
+		$app = new App();
+		$app->service('foo', $obj = new \stdClass);
+		$this->assertSame($obj, $app->foo());
+	}
+
 	public function testCall()
 	{
 		$app = new App();
