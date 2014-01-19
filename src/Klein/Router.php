@@ -28,7 +28,7 @@ use \Klein\Exceptions\HttpExceptionInterface;
  * 
  * @package     Klein
  */
-class Klein
+class Router
 {
 
     /**
@@ -162,14 +162,6 @@ class Klein
     protected $response;
 
     /**
-     * The service provider object passed to each matched route
-     *
-     * @var ServiceProvider
-     * @access protected
-     */
-    protected $service;
-
-    /**
      * A generic variable passed to each matched route
      *
      * @var mixed
@@ -200,8 +192,6 @@ class Klein
         RouteCollection $routes = null,
         AbstractRouteFactory $route_factory = null
     ) {
-        // Instanciate and fall back to defaults
-        $this->service       = $service       ?: new ServiceProvider();
         $this->app           = $app           ?: new App();
         $this->routes        = $routes        ?: new RouteCollection();
         $this->route_factory = $route_factory ?: new RouteFactory();
@@ -248,7 +238,7 @@ class Klein
      */
     public function service()
     {
-        return $this->service;
+        return $this->app;
     }
 
     /**
@@ -402,11 +392,12 @@ class Klein
         $capture = self::DISPATCH_NO_CAPTURE
     ) {
         // Set/Initialize our objects to be sent in each callback
-        $this->request = $request ?: Request::createFromGlobals();
-        $this->response = $response ?: new Response();
+        $this->request = $request = $request ?: Request::createFromGlobals();
+        $this->response = $response = $response ?: new Response();
 
         // Bind our objects to our service
-        $this->service->bind($this->request, $this->response);
+        $this->app->request(function() use ($request) { return $request; });
+	    $this->app->request(function() use ($response) { return $response; });
 
         // Prepare any named routes
         $this->routes->prepareNamed();
@@ -796,7 +787,7 @@ class Klein
                 $route->getCallback(), // Instead of relying on the slower "invoke" magic
                 $this->request,
                 $this->response,
-                $this->service,
+                $this->service(),
                 $this->app,
                 $this, // Pass the Klein instance
                 $matched,
@@ -863,8 +854,7 @@ class Klein
                         return;
                     }
                 } else {
-                    if (null !== $this->service && null !== $this->response) {
-                        $this->service->flash($err);
+                    if (null !== $this->service() && null !== $this->response) {
                         $this->response->redirect($callback);
                     }
                 }

@@ -12,7 +12,7 @@
 namespace Klein\Tests;
 
 
-use \Klein\Klein;
+use \Klein\Router;
 use \Klein\Route;
 
 /**

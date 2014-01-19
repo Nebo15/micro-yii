@@ -16,7 +16,7 @@ use Klein\App;
 use Klein\DataCollection\RouteCollection;
 use Klein\Exceptions\DispatchHaltedException;
 use Klein\Exceptions\HttpException;
-use Klein\Klein;
+use Klein\Router;
 use Klein\Request;
 use Klein\Response;
 use Klein\ServiceProvider;
@@ -96,9 +96,9 @@ class RoutingTest extends AbstractKleinTest
 
         $this->assertTrue($expected_objects['request'] instanceof Request);
         $this->assertTrue($expected_objects['response'] instanceof Response);
-        $this->assertTrue($expected_objects['service'] instanceof ServiceProvider);
+        $this->assertTrue($expected_objects['service'] instanceof App);
         $this->assertTrue($expected_objects['app'] instanceof App);
-        $this->assertTrue($expected_objects['klein'] instanceof Klein);
+        $this->assertTrue($expected_objects['klein'] instanceof Router);
         $this->assertTrue($expected_objects['matched'] instanceof RouteCollection);
         $this->assertTrue(is_array($expected_objects['methods_matched']));
 
@@ -205,7 +205,7 @@ class RoutingTest extends AbstractKleinTest
             }
         );
 
-        $output = $this->klein_app->dispatch(null, null, true, Klein::DISPATCH_CAPTURE_AND_RETURN);
+        $output = $this->klein_app->dispatch(null, null, true, Router::DISPATCH_CAPTURE_AND_RETURN);
 
         // Make sure nothing actually printed to the screen
         $this->expectOutputString('');
@@ -235,7 +235,7 @@ class RoutingTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch(null, null, false, Klein::DISPATCH_CAPTURE_AND_REPLACE);
+        $this->klein_app->dispatch(null, null, false, Router::DISPATCH_CAPTURE_AND_REPLACE);
 
         // Make sure nothing actually printed to the screen
         $this->expectOutputString('');
@@ -268,7 +268,7 @@ class RoutingTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch(null, null, false, Klein::DISPATCH_CAPTURE_AND_PREPEND);
+        $this->klein_app->dispatch(null, null, false, Router::DISPATCH_CAPTURE_AND_PREPEND);
 
         // Make sure nothing actually printed to the screen
         $this->expectOutputString('');
@@ -304,7 +304,7 @@ class RoutingTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch(null, null, false, Klein::DISPATCH_CAPTURE_AND_APPEND);
+        $this->klein_app->dispatch(null, null, false, Router::DISPATCH_CAPTURE_AND_APPEND);
 
         // Make sure nothing actually printed to the screen
         $this->expectOutputString('');
@@ -345,7 +345,7 @@ class RoutingTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch(null, null, false, Klein::DISPATCH_CAPTURE_AND_RETURN);
+        $this->klein_app->dispatch(null, null, false, Router::DISPATCH_CAPTURE_AND_RETURN);
 
         // Make sure our response body and code match up
         $this->assertSame(
@@ -2000,7 +2000,7 @@ class RoutingTest extends AbstractKleinTest
             MockRequestFactory::create('/foo%2Fbar'),
             null,
             true,
-            Klein::DISPATCH_CAPTURE_AND_RETURN
+            Router::DISPATCH_CAPTURE_AND_RETURN
         );
 
         $this->assertSame(200, $this->klein_app->response()->code());
@@ -2020,7 +2020,7 @@ class RoutingTest extends AbstractKleinTest
             MockRequestFactory::create('/user@example.com/name'),
             null,
             true,
-            Klein::DISPATCH_CAPTURE_AND_RETURN
+            Router::DISPATCH_CAPTURE_AND_RETURN
         );
 
         $this->assertSame(200, $this->klein_app->response()->code());
@@ -2046,7 +2046,7 @@ class RoutingTest extends AbstractKleinTest
             MockRequestFactory::create('/unicorn.png'),
             null,
             true,
-            Klein::DISPATCH_CAPTURE_AND_RETURN
+            Router::DISPATCH_CAPTURE_AND_RETURN
         );
 
         $this->assertSame(200, $this->klein_app->response()->code());

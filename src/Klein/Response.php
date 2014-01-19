@@ -19,7 +19,6 @@ namespace Klein;
  */
 class Response extends AbstractResponse
 {
-
     /**
      * Methods
      */

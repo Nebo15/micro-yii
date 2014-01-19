@@ -17,7 +17,7 @@ use Klein\DataCollection\RouteCollection;
 use Klein\Exceptions\DispatchHaltedException;
 use Klein\Exceptions\HttpException;
 use Klein\Exceptions\HttpExceptionInterface;
-use Klein\Klein;
+use Klein\Router;
 use Klein\Request;
 use Klein\Response;
 use Klein\Route;
@@ -30,7 +30,7 @@ use OutOfBoundsException;
  * @uses AbstractKleinTest
  * @package Klein\Tests
  */
-class KleinTest extends AbstractKleinTest
+class RouterTest extends AbstractKleinTest
 {
 
     /**
@@ -58,18 +58,10 @@ class KleinTest extends AbstractKleinTest
 
     public function testConstructor()
     {
-        $klein = new Klein();
+        $klein = new Router();
 
         $this->assertNotNull($klein);
-        $this->assertTrue($klein instanceof Klein);
-    }
-
-    public function testService()
-    {
-        $service = $this->klein_app->service();
-
-        $this->assertNotNull($service);
-        $this->assertTrue($service instanceof ServiceProvider);
+        $this->assertTrue($klein instanceof Router);
     }
 
     public function testApp()
@@ -133,7 +125,7 @@ class KleinTest extends AbstractKleinTest
             }
         );
 
-        $this->assertTrue($passed_context instanceof Klein);
+        $this->assertTrue($passed_context instanceof Router);
     }
 
     public function testWithStringCallable()
@@ -239,17 +231,10 @@ class KleinTest extends AbstractKleinTest
             }
         );
 
-        $this->assertEmpty($this->klein_app->service()->flashes());
-
         $this->assertSame(
             '',
             $this->dispatchAndReturnOutput()
         );
-
-        $this->assertNotEmpty($this->klein_app->service()->flashes());
-
-        // Clean up
-        session_destroy();
     }
 
     public function testOnHttpError()
@@ -288,7 +273,7 @@ class KleinTest extends AbstractKleinTest
         $this->assertSame(count($expected_arguments), $num_of_args);
 
         $this->assertTrue(is_int($expected_arguments['code']));
-        $this->assertTrue($expected_arguments['klein'] instanceof Klein);
+        $this->assertTrue($expected_arguments['klein'] instanceof Router);
         $this->assertTrue($expected_arguments['matched'] instanceof RouteCollection);
         $this->assertTrue(is_array($expected_arguments['methods_matched']));
         $this->assertTrue($expected_arguments['exception'] instanceof HttpExceptionInterface);

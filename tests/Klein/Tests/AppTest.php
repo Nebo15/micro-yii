@@ -22,98 +22,95 @@ use Klein\App;
 class AppTest extends AbstractKleinTest
 {
 
-    /**
-     * Constants
-     */
+	/**
+	 * Constants
+	 */
 
-    const TEST_CALLBACK_MESSAGE = 'yay';
-
-
-    /**
-     * Helpers
-     */
-
-    protected function getTestCallable($message = self::TEST_CALLBACK_MESSAGE)
-    {
-        return function () use ($message) {
-            return $message;
-        };
-    }
+	const TEST_CALLBACK_MESSAGE = 'yay';
 
 
-    /**
-     * Tests
-     */
+	/**
+	 * Helpers
+	 */
 
-    public function testRegisterFiller()
-    {
-        $func_name = 'yay_func';
+	protected function getTestCallable($message = self::TEST_CALLBACK_MESSAGE)
+	{
+		return function () use ($message) {
+			return $message;
+		};
+	}
 
-        $app = new App();
+	public function testCall()
+	{
+		$app = new App();
+		$app->foo(function () {
+			return self::TEST_CALLBACK_MESSAGE;
+		});
+		$returned = $app->foo();
 
-        $app->register($func_name, $this->getTestCallable());
+		$this->assertNotNull($returned);
+		$this->assertEquals(self::TEST_CALLBACK_MESSAGE, $returned);
+	}
 
-        return array(
-            'app' => $app,
-            'func_name' => $func_name,
-        );
-    }
+	/**
+	 * @expectedException Klein\Exceptions\UnknownServiceException
+	 */
+	public function testCall_BadMethod()
+	{
+		$app = new App();
+		$app->random_thing_that_doesnt_exist();
+	}
 
-    /**
-     * @depends testRegisterFiller
-     */
-    public function testGet(array $args)
-    {
-        // Get our vars from our args
-        extract($args);
+	public function testCall_SingletonByDefault()
+	{
+		$app = new App();
+		$app->foo(function () {
+			return new \stdClass;
+		});
+		$this->assertSame($app->foo(), $app->foo());
+	}
 
-        $returned = $app->$func_name;
+	public function testCall_DontSaveResultIfCallableReturnsNull()
+	{
+		$i = 0;
+		$app = new App();
+		$app->foo(function() use(&$i) {
+			$i++;
+		});
+		$app->foo();
+		$app->foo();
+		$this->assertEquals(2, $i);
+	}
 
-        $this->assertNotNull($returned);
-        $this->assertSame(self::TEST_CALLBACK_MESSAGE, $returned);
-    }
+	public function testGet()
+	{
+		$app = new App();
 
-    /**
-     * @expectedException Klein\Exceptions\UnknownServiceException
-     */
-    public function testGetBadMethod()
-    {
-        $app = new App();
-        $app->random_thing_that_doesnt_exist;
-    }
+		$app->testGet($this->getTestCallable());
 
-    /**
-     * @depends testRegisterFiller
-     */
-    public function testCall(array $args)
-    {
-        // Get our vars from our args
-        extract($args);
+		$returned = $app->testGet;
 
-        $returned = $app->{$func_name}();
+		$this->assertNotNull($returned);
+		$this->assertSame(self::TEST_CALLBACK_MESSAGE, $returned);
+	}
 
-        $this->assertNotNull($returned);
-        $this->assertSame(self::TEST_CALLBACK_MESSAGE, $returned);
-    }
+	/**
+	 * @expectedException Klein\Exceptions\UnknownServiceException
+	 */
+	public function testGet_BadMethod()
+	{
+		$app = new App();
+		$app->random_thing_that_doesnt_exist;
+	}
 
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testCallBadMethod()
-    {
-        $app = new App();
-        $app->random_thing_that_doesnt_exist();
-    }
-
-    /**
-     * @depends testRegisterFiller
-     * @expectedException Klein\Exceptions\DuplicateServiceException
-     */
-    public function testRegisterDuplicateMethod(array $args)
-    {
-        // Get our vars from our args
-        extract($args);
-
-        $app->register($func_name, $this->getTestCallable());
-    }
+	public function testRegisterDuplicateMethod()
+	{
+		$app = new App();
+		$app->foo(function () {
+			return 'foo';
+		});
+		$app->foo(function () {
+			return 'foo2';
+		});
+	}
 }
