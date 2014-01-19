@@ -44,11 +44,22 @@ class App
 	 */
 	protected $values = array();
 
+	/**
+	 * Register new service
+	 * @param $name
+	 * @param $closure
+	 */
 	public function service($name, $closure)
 	{
 		$this->services[$name] = $closure;
 	}
 
+	/**
+	 * Instantiate object from stored closure or return instance
+	 * @param $name
+	 * @return mixed
+	 * @throws Exceptions\UnknownServiceException
+	 */
 	public function instantiate($name)
 	{
 		if (!isset($this->services[$name])) {
