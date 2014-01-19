@@ -13,9 +13,8 @@ namespace Klein\Tests;
 
 
 use \PHPUnit_Framework_TestCase;
-
+use \Klein\App;
 use \Klein\Router;
-
 use \Klein\Tests\Mocks\HeadersNoOp;
 
 /**
@@ -37,7 +36,7 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
      * @var \Klein\Router;
      * @access protected
      */
-    protected $klein_app;
+    protected $router;
 
 
     /**
@@ -51,7 +50,7 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
     {
         // Create a new klein app,
         // since we need one pretty much everywhere
-        $this->klein_app = new Router();
+        $this->router = new Router(new App);
     }
 
     /**
@@ -67,7 +66,7 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
      */
     protected function dispatchAndReturnOutput($request = null, $response = null)
     {
-        return $this->klein_app->dispatch(
+        return $this->router->dispatch(
             $request,
             $response,
             false,
@@ -113,7 +112,7 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
     {
         // Did we not pass an instance?
         if (is_null($app_context)) {
-            $app_context = $this->klein_app ?: new Router();
+            $app_context = $this->router ?: new Router();
         }
 
         $route_directory = __DIR__ . '/routes/';

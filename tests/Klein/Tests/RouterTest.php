@@ -66,7 +66,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testApp()
     {
-        $app = $this->klein_app->app();
+        $app = $this->router->app();
 
         $this->assertNotNull($app);
         $this->assertTrue($app instanceof App);
@@ -74,7 +74,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testRoutes()
     {
-        $routes = $this->klein_app->routes();
+        $routes = $this->router->routes();
 
         $this->assertNotNull($routes);
         $this->assertTrue($routes instanceof RouteCollection);
@@ -82,9 +82,9 @@ class RouterTest extends AbstractKleinTest
 
     public function testRequest()
     {
-        $this->klein_app->dispatch();
+        $this->router->dispatch();
 
-        $request = $this->klein_app->request();
+        $request = $this->router->request();
 
         $this->assertNotNull($request);
         $this->assertTrue($request instanceof Request);
@@ -92,9 +92,9 @@ class RouterTest extends AbstractKleinTest
 
     public function testResponse()
     {
-        $this->klein_app->dispatch();
+        $this->router->dispatch();
 
-        $response = $this->klein_app->response();
+        $response = $this->router->response();
 
         $this->assertNotNull($response);
         $this->assertTrue($response instanceof Response);
@@ -102,14 +102,14 @@ class RouterTest extends AbstractKleinTest
 
     public function testRespond()
     {
-        $route = $this->klein_app->respond($this->getTestCallable());
+        $route = $this->router->respond($this->getTestCallable());
 
         $object_id = spl_object_hash($route);
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
-        $this->assertTrue($this->klein_app->routes()->exists($object_id));
-        $this->assertSame($route, $this->klein_app->routes()->get($object_id));
+        $this->assertTrue($this->router->routes()->exists($object_id));
+        $this->assertSame($route, $this->router->routes()->get($object_id));
     }
 
     public function testWith()
@@ -118,7 +118,7 @@ class RouterTest extends AbstractKleinTest
         $test_namespace = '/test/namespace';
         $passed_context = null;
 
-        $this->klein_app->with(
+        $this->router->with(
             $test_namespace,
             function ($context) use (&$passed_context) {
                 $passed_context = $context;
@@ -133,7 +133,7 @@ class RouterTest extends AbstractKleinTest
         // Test data
         $test_namespace = '/test/namespace';
 
-        $this->klein_app->with(
+        $this->router->with(
             $test_namespace,
             'test_num_args_wrapper'
         );
@@ -155,12 +155,12 @@ class RouterTest extends AbstractKleinTest
         $test_routes_include = __DIR__ .'/routes/random.php';
 
         // Test file include
-        $this->assertEmpty($this->klein_app->routes()->all());
-        $this->klein_app->with($test_namespace, $test_routes_include);
+        $this->assertEmpty($this->router->routes()->all());
+        $this->router->with($test_namespace, $test_routes_include);
 
-        $this->assertNotEmpty($this->klein_app->routes()->all());
+        $this->assertNotEmpty($this->router->routes()->all());
 
-        $all_routes = array_values($this->klein_app->routes()->all());
+        $all_routes = array_values($this->router->routes()->all());
         $test_route = $all_routes[0];
 
         $this->assertTrue($test_route instanceof Route);
@@ -172,10 +172,10 @@ class RouterTest extends AbstractKleinTest
         $request = new Request();
         $response = new Response();
 
-        $this->klein_app->dispatch($request, $response);
+        $this->router->dispatch($request, $response);
 
-        $this->assertSame($request, $this->klein_app->request());
-        $this->assertSame($response, $this->klein_app->response());
+        $this->assertSame($request, $this->router->request());
+        $this->assertSame($response, $this->router->response());
     }
 
     public function testGetPathFor()
@@ -188,18 +188,18 @@ class RouterTest extends AbstractKleinTest
         $route->setPath($test_path);
         $route->setName($test_name);
 
-        $this->klein_app->routes()->addRoute($route);
+        $this->router->routes()->addRoute($route);
 
         // Make sure it fails if not prepared
         try {
-            $this->klein_app->getPathFor($test_name);
+            $this->router->getPathFor($test_name);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof OutOfBoundsException);
         }
 
-        $this->klein_app->routes()->prepareNamed();
+        $this->router->routes()->prepareNamed();
 
-        $returned_path = $this->klein_app->getPathFor($test_name);
+        $returned_path = $this->router->getPathFor($test_name);
 
         $this->assertNotEmpty($returned_path);
         $this->assertSame($test_path, $returned_path);
@@ -207,9 +207,9 @@ class RouterTest extends AbstractKleinTest
 
     public function testOnErrorWithStringCallables()
     {
-        $this->klein_app->onError('test_num_args_wrapper');
+        $this->router->onError('test_num_args_wrapper');
 
-        $this->klein_app->respond(
+        $this->router->respond(
             function ($request, $response, $service) {
                 throw new Exception('testing');
             }
@@ -223,9 +223,9 @@ class RouterTest extends AbstractKleinTest
 
     public function testOnErrorWithBadCallables()
     {
-        $this->klein_app->onError('this_function_doesnt_exist');
+        $this->router->onError('this_function_doesnt_exist');
 
-        $this->klein_app->respond(
+        $this->router->respond(
             function ($request, $response, $service) {
                 throw new Exception('testing');
             }
@@ -249,7 +249,7 @@ class RouterTest extends AbstractKleinTest
             'exception'       => null,
         );
 
-        $this->klein_app->onHttpError(
+        $this->router->onHttpError(
             function ($code, $klein, $matched, $methods_matched, $exception) use (&$num_of_args, &$expected_arguments) {
                 // Keep track of our arguments
                 $num_of_args = func_num_args();
@@ -263,11 +263,11 @@ class RouterTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch(null, null, false);
+        $this->router->dispatch(null, null, false);
 
         $this->assertSame(
             '404 error',
-            $this->klein_app->response()->body()
+            $this->router->response()->body()
         );
 
         $this->assertSame(count($expected_arguments), $num_of_args);
@@ -278,12 +278,12 @@ class RouterTest extends AbstractKleinTest
         $this->assertTrue(is_array($expected_arguments['methods_matched']));
         $this->assertTrue($expected_arguments['exception'] instanceof HttpExceptionInterface);
 
-        $this->assertSame($expected_arguments['klein'], $this->klein_app);
+        $this->assertSame($expected_arguments['klein'], $this->router);
     }
 
     public function testOnHttpErrorWithStringCallables()
     {
-        $this->klein_app->onHttpError('test_num_args_wrapper');
+        $this->router->onHttpError('test_num_args_wrapper');
 
         $this->assertSame(
             '5',
@@ -293,7 +293,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testOnHttpErrorWithBadCallables()
     {
-        $this->klein_app->onError('this_function_doesnt_exist');
+        $this->router->onError('this_function_doesnt_exist');
 
         $this->assertSame(
             '',
@@ -303,59 +303,59 @@ class RouterTest extends AbstractKleinTest
 
     public function testAfterDispatch()
     {
-        $this->klein_app->afterDispatch(
+        $this->router->afterDispatch(
             function ($klein) {
                 $klein->response()->body('after callbacks!');
             }
         );
 
-        $this->klein_app->dispatch(null, null, false);
+        $this->router->dispatch(null, null, false);
 
         $this->assertSame(
             'after callbacks!',
-            $this->klein_app->response()->body()
+            $this->router->response()->body()
         );
     }
 
     public function testAfterDispatchWithMultipleCallbacks()
     {
-        $this->klein_app->afterDispatch(
+        $this->router->afterDispatch(
             function ($klein) {
                 $klein->response()->body('after callbacks!');
             }
         );
 
-        $this->klein_app->afterDispatch(
+        $this->router->afterDispatch(
             function ($klein) {
                 $klein->response()->body('whatever');
             }
         );
 
-        $this->klein_app->dispatch(null, null, false);
+        $this->router->dispatch(null, null, false);
 
         $this->assertSame(
             'whatever',
-            $this->klein_app->response()->body()
+            $this->router->response()->body()
         );
     }
 
     public function testAfterDispatchWithStringCallables()
     {
-        $this->klein_app->afterDispatch('test_response_edit_wrapper');
+        $this->router->afterDispatch('test_response_edit_wrapper');
 
-        $this->klein_app->dispatch(null, null, false);
+        $this->router->dispatch(null, null, false);
 
         $this->assertSame(
             'after callbacks!',
-            $this->klein_app->response()->body()
+            $this->router->response()->body()
         );
     }
 
     public function testAfterDispatchWithBadCallables()
     {
-        $this->klein_app->afterDispatch('this_function_doesnt_exist');
+        $this->router->afterDispatch('this_function_doesnt_exist');
 
-        $this->klein_app->dispatch();
+        $this->router->dispatch();
 
         $this->expectOutputString(null);
     }
@@ -365,17 +365,17 @@ class RouterTest extends AbstractKleinTest
      */
     public function testAfterDispatchWithCallableThatThrowsException()
     {
-        $this->klein_app->afterDispatch(
+        $this->router->afterDispatch(
             function ($klein) {
                 throw new Exception('testing');
             }
         );
 
-        $this->klein_app->dispatch();
+        $this->router->dispatch();
 
         $this->assertSame(
             500,
-            $this->klein_app->response()->code()
+            $this->router->response()->code()
         );
     }
 
@@ -384,24 +384,24 @@ class RouterTest extends AbstractKleinTest
      */
     public function testErrorsWithNoCallbacks()
     {
-        $this->klein_app->respond(
+        $this->router->respond(
             function ($request, $response, $service) {
                 throw new Exception('testing');
             }
         );
 
-        $this->klein_app->dispatch();
+        $this->router->dispatch();
 
         $this->assertSame(
             500,
-            $this->klein_app->response()->code()
+            $this->router->response()->code()
         );
     }
 
     public function testSkipThis()
     {
         try {
-            $this->klein_app->skipThis();
+            $this->router->skipThis();
         } catch (Exception $e) {
             $this->assertTrue($e instanceof DispatchHaltedException);
             $this->assertSame(DispatchHaltedException::SKIP_THIS, $e->getCode());
@@ -414,7 +414,7 @@ class RouterTest extends AbstractKleinTest
         $number_of_skips = 3;
 
         try {
-            $this->klein_app->skipNext($number_of_skips);
+            $this->router->skipNext($number_of_skips);
         } catch (Exception $e) {
             $this->assertTrue($e instanceof DispatchHaltedException);
             $this->assertSame(DispatchHaltedException::SKIP_NEXT, $e->getCode());
@@ -425,7 +425,7 @@ class RouterTest extends AbstractKleinTest
     public function testSkipRemaining()
     {
         try {
-            $this->klein_app->skipRemaining();
+            $this->router->skipRemaining();
         } catch (Exception $e) {
             $this->assertTrue($e instanceof DispatchHaltedException);
             $this->assertSame(DispatchHaltedException::SKIP_REMAINING, $e->getCode());
@@ -436,26 +436,26 @@ class RouterTest extends AbstractKleinTest
     {
         $test_code = 503;
 
-        $this->klein_app->respond(
-            function ($a, $b, $c, $d, $klein_app) use ($test_code) {
-                $klein_app->abort($test_code);
+        $this->router->respond(
+            function ($a, $b, $c, $router) use ($test_code) {
+                $router->abort($test_code);
             }
         );
 
         try {
-            $this->klein_app->dispatch();
+            $this->router->dispatch();
         } catch (Exception $e) {
             $this->assertTrue($e instanceof DispatchHaltedException);
             $this->assertSame(DispatchHaltedException::SKIP_REMAINING, $e->getCode());
         }
 
-        $this->assertSame($test_code, $this->klein_app->response()->code());
-        $this->assertTrue($this->klein_app->response()->isLocked());
+        $this->assertSame($test_code, $this->router->response()->code());
+        $this->assertTrue($this->router->response()->isLocked());
     }
 
     public function testOptions()
     {
-        $route = $this->klein_app->options($this->getTestCallable());
+        $route = $this->router->options($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -464,7 +464,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testHead()
     {
-        $route = $this->klein_app->head($this->getTestCallable());
+        $route = $this->router->head($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -473,7 +473,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testGet()
     {
-        $route = $this->klein_app->get($this->getTestCallable());
+        $route = $this->router->get($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -482,7 +482,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testPost()
     {
-        $route = $this->klein_app->post($this->getTestCallable());
+        $route = $this->router->post($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -491,7 +491,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testPut()
     {
-        $route = $this->klein_app->put($this->getTestCallable());
+        $route = $this->router->put($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -500,7 +500,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testDelete()
     {
-        $route = $this->klein_app->delete($this->getTestCallable());
+        $route = $this->router->delete($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);
@@ -509,7 +509,7 @@ class RouterTest extends AbstractKleinTest
 
     public function testPatch()
     {
-        $route = $this->klein_app->patch($this->getTestCallable());
+        $route = $this->router->patch($this->getTestCallable());
 
         $this->assertNotNull($route);
         $this->assertTrue($route instanceof Route);

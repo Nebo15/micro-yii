@@ -262,7 +262,7 @@ class RequestTest extends AbstractKleinTest
         $request->server()->set('REQUEST_URI', $test_uri);
         $request->server()->set('QUERY_STRING', $query_string);
 
-        $this->klein_app->respond(
+        $this->router->respond(
             function ($request, $response, $service) use (&$test_one, &$test_two, &$test_three) {
                 // Add a new var
                 $test_one = $request->query('test', 'dog');
@@ -275,9 +275,9 @@ class RequestTest extends AbstractKleinTest
             }
         );
 
-        $this->klein_app->dispatch($request);
+        $this->router->dispatch($request);
 
-        $expected_uri = parse_url($this->klein_app->request()->uri(), PHP_URL_PATH);
+        $expected_uri = parse_url($this->router->request()->uri(), PHP_URL_PATH);
 
         $this->assertSame(
             $expected_uri . '?' . $query_string . '&test=dog',

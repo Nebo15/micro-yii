@@ -164,7 +164,7 @@ class Router
     /**
      * A generic variable passed to each matched route
      *
-     * @var mixed
+     * @var \Klein\App
      * @access protected
      */
     protected $app;
@@ -187,12 +187,12 @@ class Router
      * @access public
      */
     public function __construct(
-        ServiceProvider $service = null,
         $app = null,
         RouteCollection $routes = null,
         AbstractRouteFactory $route_factory = null
     ) {
         $this->app           = $app           ?: new App();
+	    $this->app->service('router', $this);
         $this->routes        = $routes        ?: new RouteCollection();
         $this->route_factory = $route_factory ?: new RouteFactory();
     }
@@ -228,17 +228,6 @@ class Router
     public function response()
     {
         return $this->response;
-    }
-
-    /**
-     * Returns the service object
-     *
-     * @access public
-     * @return ServiceProvider
-     */
-    public function service()
-    {
-        return $this->app;
     }
 
     /**
@@ -397,11 +386,10 @@ class Router
 
         // Bind our objects to our service
         $this->app->request(function() use ($request) { return $request; });
-	    $this->app->request(function() use ($response) { return $response; });
+	    $this->app->response(function() use ($response) { return $response; });
 
         // Prepare any named routes
         $this->routes->prepareNamed();
-
 
         // Grab some data from the request
         $uri = $this->request->pathname();
@@ -787,9 +775,8 @@ class Router
                 $route->getCallback(), // Instead of relying on the slower "invoke" magic
                 $this->request,
                 $this->response,
-                $this->service(),
                 $this->app,
-                $this, // Pass the Klein instance
+                $this, // Pass the Router instance
                 $matched,
                 $methods_matched
             );
@@ -846,15 +833,13 @@ class Router
                 if (is_callable($callback)) {
                     if (is_string($callback)) {
                         $callback($this, $msg, $type, $err);
-
                         return;
                     } else {
                         call_user_func($callback, $this, $msg, $type, $err);
-
                         return;
                     }
                 } else {
-                    if (null !== $this->service() && null !== $this->response) {
+                    if (null !== $this->response) {
                         $this->response->redirect($callback);
                     }
                 }
@@ -955,10 +940,8 @@ class Router
                 if (is_callable($callback)) {
                     if (is_string($callback)) {
                         $callback($this);
-
                     } else {
                         call_user_func($callback, $this);
-
                     }
                 }
             }
