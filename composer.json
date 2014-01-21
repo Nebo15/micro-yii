@@ -1,11 +1,12 @@
 {
     "name": "korchasa/micro-yii",
     "keywords": ["router", "microframework", "yii"],
+    "description": "Klein based micro framework with Yii2 components",
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
     "php": ">=5.4.0",
-        "yiisoft/yii2": "*"
+        "yiisoft/yii2": "2.0.0-alpha"
     },
     "autoload": {
         "psr-0": { "Klein": "src/" }
