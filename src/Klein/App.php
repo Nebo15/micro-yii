@@ -16,6 +16,9 @@ use \BadMethodCallException;
 use \Klein\Exceptions\UnknownServiceException;
 use \Klein\Exceptions\DuplicateServiceException;
 
+if(!defined('LIMB_UNDEFINED'))
+	define('LIMB_UNDEFINED', 'undefined' . microtime());
+
 /**
  * App
  *
@@ -23,7 +26,6 @@ use \Klein\Exceptions\DuplicateServiceException;
  */
 class App
 {
-
 	/**
 	 * Class properties
 	 */
@@ -43,6 +45,19 @@ class App
 	 * @access protected
 	 */
 	protected $values = array();
+
+	protected $mode;
+	protected $var_dir;
+
+	public static function i()
+	{
+		static $i;
+		if(!$i)
+		{
+			$i = new App;
+		}
+		return $i;
+	}
 
 	/**
 	 * Register new service
@@ -117,5 +132,24 @@ class App
 	public function __get($name)
 	{
 		return $this->instantiate($name);
+	}
+
+	function var_dir($new_value = null)
+	{
+		if($new_value)
+			$this->var_dir($new_value);
+		else
+		{
+			$this->var_dir = $new_value ?: sys_get_temp_dir().'/limb/';
+			return $this->var_dir;
+		}
+	}
+
+	function mode($new_value = null)
+	{
+		if($new_value)
+			self::set('LIMB_APP_MODE', $new_value);
+		else
+			return self::get('LIMB_APP_MODE', LIMB_APP_PRODUCTION);
 	}
 }

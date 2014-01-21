@@ -38,6 +38,8 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
      */
     protected $router;
 
+	protected $var_dir;
+
 
     /**
      * Setup our test
@@ -51,6 +53,9 @@ abstract class AbstractKleinTest extends PHPUnit_Framework_TestCase
         // Create a new klein app,
         // since we need one pretty much everywhere
         $this->router = new Router(new App);
+	    $this->var_dir = App::i()->var_dir();
+	    if(!file_exists($this->var_dir))
+		    mkdir($this->var_dir, 0777);
     }
 
     /**
