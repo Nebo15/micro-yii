@@ -47,6 +47,7 @@ class App
 	protected $values = array();
 
 	protected $mode;
+
 	protected $var_dir;
 
 	public static function i()
@@ -54,7 +55,8 @@ class App
 		static $i;
 		if(!$i)
 		{
-			$i = new App;
+			$class = get_called_class();
+			$i = new $class;
 		}
 		return $i;
 	}
@@ -148,8 +150,8 @@ class App
 	function mode($new_value = null)
 	{
 		if($new_value)
-			self::set('LIMB_APP_MODE', $new_value);
+			$this->mode = $new_value;
 		else
-			return self::get('LIMB_APP_MODE', LIMB_APP_PRODUCTION);
+			return $this->mode;
 	}
 }
