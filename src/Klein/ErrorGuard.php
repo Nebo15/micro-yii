@@ -12,7 +12,7 @@ class ErrorGuard
 	protected $handlers = array();
 
 	/**
-	 * @return lmbErrorGuard
+	 * @return ErrorGuard
 	 */
 	static function instance()
 	{
