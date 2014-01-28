@@ -139,12 +139,9 @@ class App
 	function var_dir($new_value = null)
 	{
 		if($new_value)
-			$this->var_dir($new_value);
+			$this->var_dir = $new_value;
 		else
-		{
-			$this->var_dir = $new_value ?: sys_get_temp_dir().'/limb/';
-			return $this->var_dir;
-		}
+			return $this->var_dir ?: sys_get_temp_dir().'micro-yii/';
 	}
 
 	function mode($new_value = null)
