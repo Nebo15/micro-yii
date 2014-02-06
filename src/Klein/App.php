@@ -151,4 +151,12 @@ class App
 		else
 			return $this->mode;
 	}
+
+	function guard($handler)
+	{
+		$guard = ErrorGuard::instance();
+		$guard->pushHandler($handler);
+		$guard->enable();
+		return $guard;
+	}
 }
