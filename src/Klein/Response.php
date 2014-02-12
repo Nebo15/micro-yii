@@ -120,12 +120,12 @@ class Response extends AbstractResponse
      * @access public
      * @return Response
      */
-    public function json($object, $jsonp_prefix = null)
+    public function json($object, $jsonp_prefix = null, $pretty = true)
     {
         $this->body('');
         $this->noCache();
 
-        $json = json_encode($object);
+        $json = json_encode($object, $pretty ? JSON_PRETTY_PRINT : null);
 
         if (null !== $jsonp_prefix) {
             // Should ideally be application/json-p once adopted
