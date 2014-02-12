@@ -104,7 +104,7 @@ class ErrorGuard
 		restore_error_handler();
 	}
 
-	function onException(Exception $e)
+	function onException(\Exception $e)
 	{
 		$guard_class = get_called_class();
 		foreach($guard_class::instance()->getHandlers() as $handler)
