@@ -64,33 +64,5 @@ class Exception extends \Exception
 	{
 		return $this->backtrace;
 	}
-
-	function getNiceTraceAsString()
-	{
-		return $this->getBacktraceObject()->toString();
-	}
-
-	/**
-	 * @return lmbBacktrace
-	 */
-	function getBacktraceObject()
-	{
-		return new lmbBacktrace($this->backtrace);
-	}
-
-	function toNiceString($without_backtrace = false)
-	{
-		$string = get_class($this).': '.$this->getOriginalMessage().PHP_EOL;
-		if($this->params)
-			$string .= 'Additional params: '.PHP_EOL.lmbVar::export($this->params).PHP_EOL;
-		if(!$without_backtrace)
-			$string .= 'Backtrace: '.PHP_EOL.$this->getBacktraceObject()->toString();
-		return $string;
-	}
-
-	function __toString()
-	{
-		return $this->toNiceString();
-	}
 }
 
