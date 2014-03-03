@@ -113,9 +113,7 @@ class ErrorGuard
 
 	function onError($type, $message, $file, $line)
 	{
-		$this->onException(
-			new Exception($message, ['file' => $file, 'line' => $line], $type)
-		);
+		throw new Exception($message, ['file' => $file, 'line' => $line], $type);
 	}
 
 	function getHandlers()
