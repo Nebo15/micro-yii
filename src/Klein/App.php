@@ -26,6 +26,10 @@ if(!defined('LIMB_UNDEFINED'))
  */
 class App
 {
+	const DEVEL = 'devel';
+	const TESTING = 'testing';
+	const PRODUCTION = 'production';
+
 	/**
 	 * Class properties
 	 */
