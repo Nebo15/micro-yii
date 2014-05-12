@@ -2,6 +2,7 @@
     "name": "nebo15/micro-yii",
     "keywords": ["router", "microframework", "yii"],
     "description": "Klein based micro framework with Yii2 components",
+    "author": "korchasa",
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
